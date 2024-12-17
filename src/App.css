@@ -48,6 +48,7 @@
 .controls {
   margin: 20px 0;
   display: flex;
+  flex-wrap: wrap;
   gap: 20px;
   align-items: center;
   background: black;
@@ -58,6 +59,7 @@
   z-index: 100;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   color: white;
+  font-size: 20px;
 }
 
 .highlights-container {
@@ -73,9 +75,8 @@
   align-items: center;
   gap: 1rem;
   padding: 1rem;
-  background: white;
+  background: rgba(255, 255, 255, 0);
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .quote {
@@ -98,6 +99,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  flex: 1 1 200px;
 }
 
 .highlight-card {
@@ -107,7 +109,8 @@
 }
 
 .highlight-card.selected {
-  border-color: #007bff;
+  border-color: #00ff77;
+  border-width: 6px;
 }
 
 .card-header {
@@ -131,12 +134,89 @@
 .card-header button {
   padding: 0.5rem 1rem;
   border-radius: 4px;
-  border: 1px solid #ddd;
-  background: white;
+  border: 1px solid #000000;
+  background: rgb(0, 0, 0);
   cursor: pointer;
 }
 
 .card-header button:hover {
   background: #f0f0f0;
+}
+
+.icon-group {
+  display: flex;
+  gap: 10px;
+}
+
+.icon {
+  cursor: pointer;
+  font-size: 24px; /* Adjust size as needed */
+  padding: 5px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.icon:hover {
+  background-color: rgba(255, 255, 255, 0.2); /* Highlight on hover */
+}
+
+.icon.active {
+  background-color: rgba(255, 255, 255, 0.5); /* Active state */
+  border: 1px solid #fff; /* Optional: highlight active icon */
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 200;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.control-layer {
+  width: 100%;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.control-layer:last-child {
+  border-bottom: none;
+}
+
+.export-popup {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 15px;
+  border-radius: 8px;
+  z-index: 100;
+}
+
+.export-button {
+  background: #00ff77;
+  color: black;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.export-button:hover {
+  background: #00cc5f;
 }
 
