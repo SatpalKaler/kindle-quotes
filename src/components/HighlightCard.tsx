@@ -167,7 +167,7 @@ export const HighlightCard: React.FC<Props> = ({
           </p>
           <div style={{
             fontSize: `${metadataFontSize}px`,
-            textAlign: metadataHorizontalAlign,
+            textAlign: metadataHorizontalAlign as 'left' | 'center' | 'right',
             width: '100%',
             position: 'absolute',
             bottom: metadataVerticalAlign === 'bottom' ? '0' : metadataVerticalAlign === 'top' ? 'auto' : '50%',
