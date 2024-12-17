@@ -11,7 +11,6 @@ function App() {
   const [highlights, setHighlights] = useState<Highlight[]>([]);
   const [backgroundColor, setBackgroundColor] = useState('#000000');
   const [selectedDimension, setSelectedDimension] = useState<ScreenDimension>(SCREEN_DIMENSIONS[0]);
-  const [customDimensions, setCustomDimensions] = useState({ width: 800, height: 400 });
   const [fontSize, setFontSize] = useState(24);
   const [fontFamily, setFontFamily] = useState('Arial');
   const [selectedHighlights, setSelectedHighlights] = useState<Set<number>>(new Set());
@@ -223,8 +222,8 @@ function App() {
             index={index}
             highlight={highlight}
             backgroundColor={backgroundColor}
-            width={(selectedDimension.name === 'Custom' ? customDimensions.width : selectedDimension.width) * 0.2}
-            height={(selectedDimension.name === 'Custom' ? customDimensions.height : selectedDimension.height) * 0.2}
+            width={selectedDimension.width * 0.2}
+            height={selectedDimension.height * 0.2}
             fontSize={fontSize * 0.2}
             fontFamily={fontFamily}
             metadataFontSize={metadataFontSize * 0.2}
