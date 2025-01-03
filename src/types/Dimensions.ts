@@ -23,8 +23,8 @@ export const SCREEN_DIMENSIONS: ScreenDimension[] = [
   { name: 'Instagram Story', width: 1080, height: 1920 },
   { 
     name: 'Custom', 
-    width: 800, 
-    height: 400, 
+    width: 1000, 
+    height: 2000, 
     isCustom: true, 
     editable: true 
   }

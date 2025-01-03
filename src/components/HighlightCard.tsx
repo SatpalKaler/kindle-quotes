@@ -1,6 +1,5 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import html2canvas from 'html2canvas';
-import { saveAs } from 'file-saver';
 import { Highlight } from '../types/Highlight';
 
 interface Props {
@@ -44,47 +43,32 @@ export const HighlightCard: React.FC<Props> = ({
   onExportImage,
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [isTransparent, setIsTransparent] = useState(false);
 
-  const exportAsImage = async () => {
-    if (!cardRef.current) {
-      console.error('Card reference is null');
-      return;
-    }
+  const exportAsImage = useCallback(async () => {
+    if (!cardRef.current) return;
 
     try {
       const canvas = await html2canvas(cardRef.current, {
         scale: 5,
         useCORS: true,
         logging: false,
-        backgroundColor: isTransparent ? 'transparent' : backgroundColor
+        backgroundColor
       });
-      
-      return new Promise<void>((resolve, reject) => {
-        canvas.toBlob((blob) => {
-          if (blob) {
-            saveAs(blob, `highlight-${highlight.book}-${index}.png`);
-            resolve();
-          } else {
-            reject(new Error('Failed to create blob from canvas'));
-          }
-        }, 'image/png', 1.0);
-      });
+
+      const link = document.createElement('a');
+      link.download = `highlight-${index}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
     } catch (error) {
       console.error('Error exporting image:', error);
-      throw error;
     }
-  };
+  }, [backgroundColor, index]);
 
   useEffect(() => {
     if (onExportImage) {
       onExportImage(exportAsImage);
     }
-  }, [onExportImage, exportAsImage]);
-
-  const toggleTransparency = () => {
-    setIsTransparent(!isTransparent);
-  };
+  }, [exportAsImage, onExportImage]);
 
   return (
     <div className={`highlight-card ${isSelected ? 'selected' : ''}`}>
@@ -95,14 +79,14 @@ export const HighlightCard: React.FC<Props> = ({
           onChange={onSelect}
         />
         <button onClick={exportAsImage}>Export</button>
-        {isCustomDimension && onDimensionsChange && (
+        {isCustomDimension && (
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             <div>
               <label>Width: </label>
               <input
                 type="number"
                 value={width}
-                onChange={(e) => onDimensionsChange(parseInt(e.target.value) || width, height)}
+                onChange={(e) => onDimensionsChange?.(parseInt(e.target.value) || width, height)}
                 style={{ width: '60px' }}
               />
             </div>
@@ -111,21 +95,18 @@ export const HighlightCard: React.FC<Props> = ({
               <input
                 type="number"
                 value={height}
-                onChange={(e) => onDimensionsChange(width, parseInt(e.target.value) || height)}
+                onChange={(e) => onDimensionsChange?.(width, parseInt(e.target.value) || height)}
                 style={{ width: '60px' }}
               />
             </div>
           </div>
         )}
-        <label>
-          <input type="checkbox" id="transparentBackground" onChange={toggleTransparency} /> Transparent Background
-        </label>
       </div>
       
       <div 
         ref={cardRef}
         style={{
-          backgroundColor: isTransparent ? 'transparent' : backgroundColor,
+          backgroundColor: backgroundColor,
           width: `${width}px`,
           height: `${height}px`,
           display: 'flex',
@@ -154,8 +135,10 @@ export const HighlightCard: React.FC<Props> = ({
             alignItems: 'center',
             justifyContent: 'center',
             color: fontColor,
+            fontWeight: 'bold',
+            fontStyle: 'italic',
           }}>
-            "{highlight.text}"
+            {highlight.text}
           </p>
           <div style={{
             fontSize: `${metadataFontSize}px`,
@@ -163,9 +146,9 @@ export const HighlightCard: React.FC<Props> = ({
             width: '100%',
             color: fontColor,
           }}>
-            <p style={{ margin: '5px 0', color: fontColor }}>Page {highlight.page}</p>
-            <p style={{ margin: '5px 0', color: fontColor }}>{highlight.book}</p>
-            <p style={{ margin: '5px 0', color: fontColor }}>{highlight.author}</p>
+            <p style={{ margin: '1px 0', color: fontColor }}>Page {highlight.page}</p>
+            <p style={{ margin: '1px 0', color: fontColor }}>{highlight.book}</p>
+            <p style={{ margin: '1px 0', color: fontColor }}>{highlight.author}</p>
           </div>
         </div>
       </div>
