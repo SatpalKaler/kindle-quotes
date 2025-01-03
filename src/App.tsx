@@ -8,6 +8,14 @@ import './App.css';
 import ExportModal from './components/ExportModal';
 import { DeviceWarning } from './components/DeviceWarning';
 
+declare global {
+  interface Window {
+    kofiWidgetOverlay: {
+      draw: (userId: string, options: object) => void;
+    };
+  }
+}
+
 function App() {
   const [highlights, setHighlights] = useState<Highlight[]>([]);
   const [backgroundColor, setBackgroundColor] = useState('#000000');
