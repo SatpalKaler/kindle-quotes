@@ -42,27 +42,26 @@
 }
 
 .App {
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 .controls {
-  margin: 20px 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  align-items: center;
-  background: black;
-  border-radius: 10px;
-  padding: 20px;
-  position: sticky;
+  width: 300px;
+  flex-shrink: 0;
+  position: fixed;
+  left: 0;
   top: 0;
+  height: 100vh;
+  background-color: #1a1a1a;
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
   z-index: 100;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  color: white;
-  font-size: 20px;
 }
 
 .highlights-container {
+  margin-left: 320px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 2rem;
@@ -73,22 +72,27 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 1rem;
-  padding: 1rem;
+  padding: 2rem;
   background: rgba(255, 255, 255, 0);
   border-radius: 8px;
+  min-height: 300px;
 }
 
 .quote {
   font-size: 24px;
   line-height: 1.4;
-  margin-bottom: 20px;
+  margin: 0;
+  text-align: center;
+  width: 100%;
 }
 
 .metadata {
   font-size: 16px;
   text-align: right;
   width: 100%;
+  margin-top: auto;
 }
 
 .metadata p {
@@ -97,9 +101,9 @@
 
 .control-group {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 10px;
-  flex: 1 1 200px;
+  width: 100%;
 }
 
 .highlight-card {
@@ -123,12 +127,21 @@
 
 .control-group label {
   color: white;
+  margin-top: 10px;
 }
 
 .control-group input,
 .control-group select,
 .control-group button {
-  color: black;
+  color: rgb(255, 255, 255);
+  width: 100%;
+  font-size: 20px;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.control-group input[type="color"] {
+  height: 50px;
 }
 
 .card-header button {
@@ -145,13 +158,15 @@
 
 .icon-group {
   display: flex;
+  justify-content: center;
   gap: 10px;
+  margin: 5px 0;
 }
 
 .icon {
   cursor: pointer;
   font-size: 24px; /* Adjust size as needed */
-  padding: 5px;
+  padding: 8px 12px;
   border: 1px solid transparent;
   border-radius: 4px;
   transition: background-color 0.3s;
@@ -181,6 +196,7 @@
 
 .modal-content {
   background: white;
+  color: black;
   padding: 20px;
   border-radius: 8px;
   text-align: center;
@@ -190,6 +206,9 @@
   width: 100%;
   padding: 10px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .control-layer:last-child {
@@ -201,7 +220,7 @@
   bottom: 20px;
   right: 20px;
   background: rgba(0, 0, 0, 0.8);
-  padding: 15px;
+  padding: 15px;  
   border-radius: 8px;
   z-index: 100;
 }
@@ -218,5 +237,119 @@
 
 .export-button:hover {
   background: #00cc5f;
+}
+
+.control-group input[type="number"] {
+  width: 100%;
+  padding: 8px;
+  background: #333;
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: white;
+}
+
+.control-group input[type="number"]:focus {
+  outline: none;
+  border-color: #00ff77;
+}
+
+/* Add some breathing room between font controls */
+.control-group label[for="fontSize"],
+.control-group label[for="metadataFontSize"] {
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+.centered-header {
+  text-align: center;
+  width: 100%;
+  padding: 20px 0;
+  margin-left: 300px;
+}
+
+.main-content {
+  display: flex;
+  gap: 20px;
+}
+
+.highlights-grid {
+  flex-grow: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding: 20px;
+  margin-left: 300px;
+}
+
+/* Adjust the export popup to not interfere with the grid */
+.export-popup {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.modal-content .close-button {
+  background: #666;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.modal-content .close-button:hover {
+  background: #555;
+}
+
+.modal-content .export-button {
+  background: #00ff77;
+  color: black;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.modal-content .export-button:hover {
+  background: #00cc5f;
+}
+
+/* Add a specific class for export */
+.export-highlight-card {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 2rem !important;
+  background: rgba(0, 0, 0, 1) !important; /* Force black background */
+  min-height: 300px !important;
+  width: 100% !important;
+}
+
+.export-quote {
+  font-size: 24px !important;
+  line-height: 1.4 !important;
+  margin: 0 !important;
+  text-align: center !important;
+  width: 100% !important;
+  color: white !important;
+}
+
+.export-metadata {
+  font-size: 16px !important;
+  text-align: right !important;
+  width: 100% !important;
+  margin-top: auto !important;
+  color: white !important;
 }
 

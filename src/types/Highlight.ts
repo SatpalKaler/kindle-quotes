@@ -5,4 +5,5 @@ export interface Highlight {
   location: string;
   date: string;
   text: string;
+  exportAsImage?: (exportFn: () => void) => void;
 } 

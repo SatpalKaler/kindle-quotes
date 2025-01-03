@@ -2,6 +2,8 @@ export interface ScreenDimension {
   name: string;
   width: number;
   height: number;
+  isCustom?: boolean;
+  editable?: boolean;
 }
 
 export const SCREEN_DIMENSIONS: ScreenDimension[] = [
@@ -19,7 +21,13 @@ export const SCREEN_DIMENSIONS: ScreenDimension[] = [
   { name: '1080p Desktop', width: 1920, height: 1080 },
   { name: 'Instagram Post', width: 1080, height: 1080 },
   { name: 'Instagram Story', width: 1080, height: 1920 },
-  { name: 'Custom', width: 800, height: 400 }
+  { 
+    name: 'Custom', 
+    width: 800, 
+    height: 400, 
+    isCustom: true, 
+    editable: true 
+  }
 ];
 
 // Preview dimensions (smaller display size for the cards)
