@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { FileUpload } from './components/FileUpload';
 import { HighlightCard } from './components/HighlightCard';
 import { parseClippings } from './utils/parser';
@@ -25,6 +25,31 @@ function App() {
   const [useRandomColors, setUseRandomColors] = useState(false);
   const [randomColorMap, setRandomColorMap] = useState<{[key: number]: string}>({});
   const [hasFileUploaded, setHasFileUploaded] = useState(false);
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://storage.ko-fi.com/cdn/scripts/overlay-widget.js';
+    script.async = true;
+    script.onload = () => {
+      
+      window.kofiWidgetOverlay.draw('satpalkaler', {
+        'type': 'floating-chat',
+        'floating-chat.donateButton.text': 'Support me',
+        'floating-chat.donateButton.background-color': '#5bc0de',
+        'floating-chat.donateButton.text-color': '#323842',
+        'floating-chat.wrapper.style.background': 'transparent'
+      });
+    };
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+      const widget = document.querySelector('iframe[data-ko-fi]');
+      if (widget && widget.parentNode) {
+        widget.parentNode.removeChild(widget);
+      }
+    };
+  }, []);
 
   const calculateContrastRatio = (color1: string, color2: string) => {
     // Convert hex to RGB

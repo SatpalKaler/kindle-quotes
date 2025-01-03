@@ -113,7 +113,7 @@
 }
 
 .highlight-card.selected {
-  border-color: #00ff77;
+  border-color: teal;
   border-width: 6px;
 }
 
@@ -228,7 +228,7 @@
 }
 
 .export-button {
-  background: #00ff77;
+  background: rgb(1, 213, 213);
   color: black;
   border: none;
   padding: 10px 20px;
@@ -238,7 +238,7 @@
 }
 
 .export-button:hover {
-  background: #00cc5f;
+  background: rgb(1, 191, 191);
 }
 
 .control-group input[type="number"] {
@@ -252,7 +252,7 @@
 
 .control-group input[type="number"]:focus {
   outline: none;
-  border-color: #00ff77;
+  border-color: teal;
 }
 
 /* Add some breathing room between font controls */
@@ -402,7 +402,7 @@
 
 .file-upload-container.prominent {
   transform: scale(1.05);
-  background-color: #00cc5f;
+  background-color: teal;
   font-weight: bold;
   padding: 20px;
   border-radius: 8px;
@@ -412,5 +412,33 @@
 .file-upload-container.prominent input[type="file"] {
   font-size: 1.1em;
   padding: 10px;
+}
+
+/* Remove white border from Ko-fi widget */
+iframe[data-ko-fi],
+iframe[title="Ko-fi Button"],
+#kofi-iframe-wrapper,
+.floating-chat-kofi-popup-widget {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.floating-chat-kofi-popup-iframe,
+#floating-chat-kofi-popup-iframe,
+.floating-chat-kofi-popup-widget {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Target any wrapper divs that Ko-fi might create */
+div[id^="kofi-"] {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
