@@ -54,10 +54,10 @@
   left: 0;
   top: 0;
   height: 100vh;
-  background-color: #1a1a1a;
+  background-color: rgb(0, 77, 77);
   padding: 20px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-  z-index: 100;
+  z-index: 800;
 }
 
 .highlights-container {
@@ -134,14 +134,33 @@
 .control-group select,
 .control-group button {
   color: rgb(255, 255, 255);
+  background: rgba(0, 128, 128, 0.2);
+  border: 1px solid teal;
   width: 100%;
   font-size: 20px;
-  padding: 8px;
+  padding: 5px;
   box-sizing: border-box;
 }
 
 .control-group input[type="color"] {
   height: 50px;
+  border-radius: 7px;
+  padding: 2px;
+}
+
+.control-group input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 4px;
+}
+
+.control-group input[type="color"]::-webkit-color-swatch {
+  border-radius: 8px;
+  border: none;
+}
+
+/* For Firefox */
+.control-group input[type="color"]::-moz-color-swatch {
+  border-radius: 4px;
+  border: none;
 }
 
 .card-header button {
@@ -205,26 +224,16 @@
 .control-layer {
   width: 100%;
   padding: 10px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
   gap: 15px;
+  position: relative;
+  z-index: 1;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.1);
 }
 
 .control-layer:last-child {
   border-bottom: none;
-}
-
-.export-popup {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: white;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  z-index: 1000;
-  min-width: 200px;
 }
 
 .export-button {
@@ -244,15 +253,16 @@
 .control-group input[type="number"] {
   width: 100%;
   padding: 8px;
-  background: #333;
-  border: 1px solid #555;
+  background: rgba(0, 128, 128, 0.2);
+  border: 1px solid teal;
   border-radius: 4px;
   color: white;
 }
 
 .control-group input[type="number"]:focus {
   outline: none;
-  border-color: teal;
+  border-color: #00b3b3;
+  background: rgba(0, 128, 128, 0.3);
 }
 
 /* Add some breathing room between font controls */
@@ -263,11 +273,14 @@
 }
 
 .centered-header {
-  width: 128%;
+  width: calc(100% - 400px);
   padding: 1rem 0;
   margin-bottom: 1rem;
+  margin-left: 430px;
   text-align: center;
   font-family: 'Verdana', sans-serif;
+  position: relative;
+  z-index: 1000;
 }
 
 .main-content {
@@ -281,7 +294,7 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   padding: 20px;
-  margin-left: 300px;
+  margin-left: 400px;
 }
 
 /* Adjust the export popup to not interfere with the grid */
@@ -317,7 +330,7 @@
   background: #00ff77;
   color: black;
   border: none;
-  padding: 10px 20px;
+  padding: 1px 2px;
   border-radius: 4px;
   cursor: pointer;
   font-weight: bold;
@@ -376,69 +389,171 @@
   cursor: not-allowed;
 }
 
-.disabled-controls,
-.disabled-controls input,
-.disabled-controls select,
-.disabled-controls input[type="number"],
-.disabled-controls select {
-  opacity: 0.3;
-  pointer-events: none;
-  background-color: #333; /* Maintains dark theme */
-  border-color: #444;
-}
 
-/* Override any existing styles */
-.control-group input[type="number"]:disabled,
-.control-group select:disabled {
-  opacity: 0.3;
-  pointer-events: none;
-  background-color: #333;
-  border-color: #444;
-}
 
 .file-upload-container {
   transition: all 0.3s ease;
+  z-index: 1000;
 }
 
 .file-upload-container.prominent {
-  transform: scale(1.05);
+  transform: scale(1.01);
   background-color: teal;
   font-weight: bold;
   padding: 20px;
-  border-radius: 8px;
+  z-index: 1000;
+  border-radius: 3px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .file-upload-container.prominent input[type="file"] {
   font-size: 1.1em;
   padding: 10px;
+  z-index: 1000;
 }
 
-/* Remove white border from Ko-fi widget */
-iframe[data-ko-fi],
-iframe[title="Ko-fi Button"],
-#kofi-iframe-wrapper,
-.floating-chat-kofi-popup-widget {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  outline: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
+
+.instructions-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, .8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 900;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
 }
 
-.floating-chat-kofi-popup-iframe,
-#floating-chat-kofi-popup-iframe,
-.floating-chat-kofi-popup-widget {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
+.instructions-modal {
+  background: #1a1a1a;
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  top: 50px;
+  left: 70px;
+  transform: none;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-/* Target any wrapper divs that Ko-fi might create */
-div[id^="kofi-"] {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
+.instructions-modal img {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 20px;
 }
 
+.instructions-modal ol {
+  text-align: left;
+  margin: 0;
+  padding-left: 25px;
+  color: #fff;
+}
+
+.instructions-modal li {
+  margin: 12px 0;
+  line-height: 1.4;
+}
+
+.divider {
+  border: .5px solid #000000;
+  margin: 25px 0;
+  width: 114.8%;
+  margin-left: -10%;
+}
+
+.file-upload-container {
+  background: rgba(0, 128, 128, 0.2);
+  padding: 15px;
+  border-radius: 8px;
+  margin: 15px 0;
+  border: 2px dashed teal;
+  transition: all 0.3s ease;
+}
+
+.file-upload-container:hover {
+  background: rgba(0, 128, 128, 0.3);
+  border-color: #00b3b3;
+}
+
+.file-upload-container input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  color: white;
+  cursor: pointer;
+}
+
+.instruction-image {
+  width: 100%;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.control-group select,
+.control-group input {
+  background: rgba(0, 128, 128, 0.2);
+  border: 1px solid teal;
+  border-radius: 4px;
+  color: white;
+  width: 100%;
+  padding: 4px;
+}
+
+.control-group select:focus,
+.control-group input:focus {
+  outline: none;
+  border-color: #00b3b3;
+  background: rgba(0, 128, 128, 0.3);
+}
+
+.control-group select option {
+  background-color: rgb(0, 77, 77); /* Match the sidebar color */
+  color: white;
+}
+
+/* Styling for range inputs */
+.control-group input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 8px;
+  background: rgba(0, 128, 128, 0.2);
+  border-radius: 4px;
+  outline: none; 
+  border: 1px solid teal;
+}
+
+/* Thumb styling */
+.control-group input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: rgb(1, 213, 213);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid teal;
+}
+
+.control-group input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: rgb(1, 213, 213);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid teal;
+}
+
+/* Value display styling */
+.control-group span {
+  color: white;
+  margin-left: 10px;
+  font-size: 14px;
+}

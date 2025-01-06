@@ -8,14 +8,6 @@ import './App.css';
 import ExportModal from './components/ExportModal';
 import { DeviceWarning } from './components/DeviceWarning';
 
-declare global {
-  interface Window {
-    kofiWidgetOverlay: {
-      draw: (userId: string, options: object) => void;
-    };
-  }
-}
-
 function App() {
   const [highlights, setHighlights] = useState<Highlight[]>([]);
   const [backgroundColor, setBackgroundColor] = useState('#000000');
@@ -33,31 +25,6 @@ function App() {
   const [useRandomColors, setUseRandomColors] = useState(false);
   const [randomColorMap, setRandomColorMap] = useState<{[key: number]: string}>({});
   const [hasFileUploaded, setHasFileUploaded] = useState(false);
-
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://storage.ko-fi.com/cdn/scripts/overlay-widget.js';
-    script.async = true;
-    script.onload = () => {
-      
-      window.kofiWidgetOverlay.draw('satpalkaler', {
-        'type': 'floating-chat',
-        'floating-chat.donateButton.text': 'Support me',
-        'floating-chat.donateButton.background-color': '#5bc0de',
-        'floating-chat.donateButton.text-color': '#323842',
-        'floating-chat.wrapper.style.background': 'transparent'
-      });
-    };
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
-      const widget = document.querySelector('iframe[data-ko-fi]');
-      if (widget && widget.parentNode) {
-        widget.parentNode.removeChild(widget);
-      }
-    };
-  }, []);
 
   const calculateContrastRatio = (color1: string, color2: string) => {
     // Convert hex to RGB
@@ -168,6 +135,25 @@ function App() {
 
   return (
     <div className="App">
+      {!hasFileUploaded && (
+        <div className="instructions-overlay">
+          <div className="instructions-modal">
+            <ol>
+              <li>Find the MyClippings.txt document from your Kindle</li>
+              <li>Click Choose File below and select the MyClippings.txt file</li>
+            </ol>
+            <div className="file-upload-container">
+              <FileUpload onFileUpload={handleFileUpload} />
+            </div>
+            <img 
+              src="src/assets/kindleinstruction.jpg" 
+              alt="Screenshot showing MyClippings.txt location" 
+              className="instruction-image"
+            />
+          </div>
+        </div>
+      )}
+      
       <DeviceWarning />
       <header className="centered-header">
         <h1 className="text-center">Kindle Highlights to Wallpaper</h1>
@@ -177,10 +163,6 @@ function App() {
         <div className="controls">
           <div className="control-layer">
             <div className="control-group">
-              <div className={`file-upload-container ${!hasFileUploaded ? 'prominent' : ''}`}>
-                <FileUpload onFileUpload={handleFileUpload} />
-              </div>
-              
               <div className={!hasFileUploaded ? 'disabled-controls' : ''}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <label>Font Color:</label>
@@ -201,8 +183,8 @@ function App() {
                     disabled={isTransparent}
                   />
                 </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '190px' }}>
+<br></br>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: '70px' }}>
                   <label>
                     <input
                       type="checkbox"
@@ -229,6 +211,7 @@ function App() {
                     Random Colors
                   </label>
                 </div>
+                <hr className="divider" />
                 
                 <label>Screen Size:</label>
                 <select onChange={handleDimensionChange} value={selectedDimension.name}>
@@ -290,23 +273,25 @@ function App() {
               
               <label>Quote Size:</label>
               <input
-                type="number"
+                type="range"
                 value={fontSize}
                 onChange={(e) => setFontSize(parseInt(e.target.value))}
                 min="50"
                 max="120"
                 disabled={!hasFileUploaded}
               />
+              <span>{fontSize}</span>
 
               <label>Metadata Size:</label>
               <input
-                type="number"
+                type="range"
                 value={metadataFontSize}
                 onChange={(e) => setMetadataFontSize(parseInt(e.target.value))}
                 min="20"
                 max="120"
                 disabled={!hasFileUploaded}
               />
+              <span>{metadataFontSize}</span>
             </div>
           </div>
         </div>
