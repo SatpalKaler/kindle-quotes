@@ -522,6 +522,7 @@
 /* Styling for range inputs */
 .control-group input[type="range"] {
   -webkit-appearance: none;
+  appearance: none;
   width: 100%;
   height: 8px;
   background: rgba(0, 128, 128, 0.2);
