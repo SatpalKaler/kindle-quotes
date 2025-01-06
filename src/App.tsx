@@ -140,16 +140,17 @@ function App() {
           <div className="instructions-modal">
             <ol>
               <li>Find the MyClippings.txt document from your Kindle</li>
+              <img 
+              src="/kindleinstruction.jpg" 
+              alt="Screenshot showing MyClippings.txt location" 
+              className="instruction-image"
+            />
               <li>Click Choose File below and select the MyClippings.txt file</li>
             </ol>
             <div className="file-upload-container">
               <FileUpload onFileUpload={handleFileUpload} />
             </div>
-            <img 
-              src="public/kindleinstruction.jpg" 
-              alt="Screenshot showing MyClippings.txt location" 
-              className="instruction-image"
-            />
+            
           </div>
         </div>
       )}
