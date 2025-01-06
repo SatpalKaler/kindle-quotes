@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { FileUpload } from './components/FileUpload';
 import { HighlightCard } from './components/HighlightCard';
 import { parseClippings } from './utils/parser';
