@@ -27,6 +27,7 @@ function App() {
   const [randomColorMap, setRandomColorMap] = useState<{[key: number]: string}>({});
   const [hasFileUploaded, setHasFileUploaded] = useState(false);
   const [isKofiModalOpen, setIsKofiModalOpen] = useState(false);
+  const [fileLoaded, setFileLoaded] = useState(false);
 
   const calculateContrastRatio = (color1: string, color2: string) => {
     // Convert hex to RGB
@@ -88,6 +89,7 @@ function App() {
     const parsedHighlights = parseClippings(content);
     setHighlights(parsedHighlights);
     setHasFileUploaded(true);
+    setFileLoaded(true);
     
     if (useRandomColors) {
       const newColorMap = parsedHighlights.reduce((acc, _, index) => {
@@ -186,7 +188,7 @@ function App() {
       )}
       
       <DeviceWarning />
-      <header className="centered-header">
+      <header className={`centered-header ${fileLoaded ? 'file-loaded' : 'initial'}`}>
         <h1 className="text-center">Kindle Highlights to Wallpaper</h1>
       </header>
 
