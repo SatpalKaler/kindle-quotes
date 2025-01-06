@@ -150,7 +150,35 @@ function App() {
             <div className="file-upload-container">
               <FileUpload onFileUpload={handleFileUpload} />
             </div>
-            
+            <div style={{ 
+              position: 'absolute', 
+              bottom: '-40px', 
+              right: '20px',
+              marginTop: '20px'
+            }}>
+              <button 
+                onClick={async () => {
+                  try {
+                    const response = await fetch('/My Clippings Sample.txt');
+                    const text = await response.text();
+                    handleFileUpload(text);
+                  } catch (error) {
+                    console.error('Error loading sample:', error);
+                  }
+                }}
+                style={{
+                  padding: '6px 12px',
+                  backgroundColor: '#666666',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '14px'
+                }}
+              >
+                Use Sample
+              </button>
+            </div>
           </div>
         </div>
       )}
