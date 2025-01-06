@@ -7,6 +7,7 @@ import { ScreenDimension, SCREEN_DIMENSIONS } from './types/Dimensions';
 import './App.css';
 import ExportModal from './components/ExportModal';
 import { DeviceWarning } from './components/DeviceWarning';
+import KofiModal from './components/KofiModal';
 
 function App() {
   const [highlights, setHighlights] = useState<Highlight[]>([]);
@@ -25,6 +26,7 @@ function App() {
   const [useRandomColors, setUseRandomColors] = useState(false);
   const [randomColorMap, setRandomColorMap] = useState<{[key: number]: string}>({});
   const [hasFileUploaded, setHasFileUploaded] = useState(false);
+  const [isKofiModalOpen, setIsKofiModalOpen] = useState(false);
 
   const calculateContrastRatio = (color1: string, color2: string) => {
     // Convert hex to RGB
@@ -187,6 +189,23 @@ function App() {
       <header className="centered-header">
         <h1 className="text-center">Kindle Highlights to Wallpaper</h1>
       </header>
+
+      <div style={{ 
+        position: 'fixed',
+        bottom: '20px',
+        left: '20px',
+        zIndex: 900
+      }}>
+        {hasFileUploaded && (
+          <img 
+            height='36' 
+            style={{ border: 0, height: '36px', cursor: 'pointer' }} 
+            src='https://storage.ko-fi.com/cdn/kofi5.png?v=6' 
+            alt='Buy Me a Coffee at ko-fi.com' 
+            onClick={() => setIsKofiModalOpen(true)}
+          />
+        )}
+      </div>
       
       <div className="main-content">
         <div className="controls">
@@ -394,6 +413,11 @@ function App() {
         onClose={() => setIsModalOpen(false)} 
         selectedCount={selectedHighlights.size}
         onExport={exportSelected}
+      />
+
+      <KofiModal 
+        isOpen={isKofiModalOpen}
+        onClose={() => setIsKofiModalOpen(false)}
       />
     </div>
   );
