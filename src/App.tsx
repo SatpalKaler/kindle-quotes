@@ -146,7 +146,7 @@ function App() {
               <FileUpload onFileUpload={handleFileUpload} />
             </div>
             <img 
-              src="src/assets/kindleinstruction.jpg" 
+              src="public/kindleinstruction.jpg" 
               alt="Screenshot showing MyClippings.txt location" 
               className="instruction-image"
             />
