@@ -7,8 +7,12 @@ export interface ScreenDimension {
 }
 
 export const SCREEN_DIMENSIONS: ScreenDimension[] = [
-  { name: 'iPhone 14 Pro Max', width: 1290, height: 2796 },
-  { name: 'iPhone 14/13', width: 1170, height: 2532 },
+  { name: 'iPhone 11/12/13', width: 1080, height: 2536 },
+  { name: 'iPhone 11 Pro', width: 1125, height: 2436 },
+  { name: 'iPhone 11 Pro Max/12 Pro/12 Pro Max/13 Pro/13 Pro Max', width: 1284, height: 2778 },
+  { name: 'iPhone 14/15/16', width: 1170, height: 2532 },
+  { name: 'iPhone 13 Pro/14 Pro/15 Pro/16 Pro', width: 1170, height: 2532 },
+  { name: 'iPhone 14 Pro Max/15 Pro Max/16 Pro Max', width: 1290, height: 2796 },
   { name: 'Samsung S23 Ultra', width: 1440, height: 3088 },
   { name: 'Samsung S23', width: 1080, height: 2340 },
   { name: 'Google Pixel 7 Pro', width: 1440, height: 3120 },
