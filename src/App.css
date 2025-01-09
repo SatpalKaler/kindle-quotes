@@ -1,8 +1,23 @@
+:root {
+  color-scheme: dark;
+  background-color: #1a1a1a;
+}
+
+html {
+  zoom: 1;
+  -ms-zoom: 1;
+  -webkit-zoom: 1;
+  -moz-transform: scale(1);
+  -moz-transform-origin: 0 0;
+}
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  background-color: #1a1a1a;
+  color: #ffffff;
 }
 
 .logo {
