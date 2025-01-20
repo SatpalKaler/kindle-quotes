@@ -146,7 +146,7 @@ export const HighlightCard: React.FC<Props> = ({
             width: '100%',
             color: fontColor,
           }}>
-            <p style={{ margin: '1px 0', color: fontColor }}>Page {highlight.page}</p>
+            {highlight.page && <p style={{ margin: '1px 0', color: fontColor }}>Page {highlight.page}</p>}
             <p style={{ margin: '1px 0', color: fontColor }}>{highlight.book}</p>
             <p style={{ margin: '1px 0', color: fontColor }}>{highlight.author}</p>
           </div>
