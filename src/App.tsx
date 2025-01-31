@@ -8,6 +8,7 @@ import './App.css';
 import ExportModal from './components/ExportModal';
 import { DeviceWarning } from './components/DeviceWarning';
 import KofiModal from './components/KofiModal';
+import { Analytics } from '@vercel/analytics/react';
 
 function App() {
   const [highlights, setHighlights] = useState<Highlight[]>([]);
@@ -426,3 +427,4 @@ function App() {
 }
 
 export default App;
+  <Analytics/>
