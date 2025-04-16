@@ -1,0 +1,9 @@
+Add select all, unselect all
+
+Zip file when more than 5
+
+Add kindle presets
+
+Add clicking anywhere in a hitbox, rather than having to hit select box accurately
+
+Add googlesense ads
