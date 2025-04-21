@@ -44,6 +44,7 @@ export const HighlightCard: React.FC<Props> = ({
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
 
+  // Fix: Change return type and actually return the dataUrl
   const exportAsImage: () => Promise<string | null> = useCallback(async () => {
     if (!cardRef.current) return null;
 
@@ -55,27 +56,28 @@ export const HighlightCard: React.FC<Props> = ({
         backgroundColor
       });
 
-      return canvas.toDataURL('image/png');
+      const dataUrl = canvas.toDataURL('image/png');
+      return dataUrl; // Return the dataUrl as expected
     } catch (error) {
       console.error('Error exporting image:', error);
       return null;
     }
   }, [backgroundColor, index]);
 
-  // Add this function for the button
-  const handleExportButtonClick = async () => {
-    const dataUrl = await exportAsImage();
-    if (dataUrl) {
-      const link = document.createElement('a');
-      link.download = `highlight-${index}.png`;
-      link.href = dataUrl;
-      link.click();
-    }
-  };
+  // Remove this function, as the export button is gone
+  // const handleExportButtonClick = async () => {
+  //   const dataUrl = await exportAsImage();
+  //   if (dataUrl) {
+  //     const link = document.createElement('a');
+  //     link.download = `highlight-${index}.png`;
+  //     link.href = dataUrl;
+  //     link.click();
+  //   }
+  // };
 
   useEffect(() => {
     if (onExportImage) {
-      onExportImage(exportAsImage);
+      onExportImage(exportAsImage); // Now the types match
     }
   }, [exportAsImage, onExportImage]);
 

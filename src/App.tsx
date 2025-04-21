@@ -22,6 +22,7 @@ function App() {
   const [fontColor, setFontColor] = useState('#FFFFFF');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTransparent, setIsTransparent] = useState(false);
+  // Change the type here to match the actual function signature
   const [exportFunctions, setExportFunctions] = useState<{ [key: number]: () => Promise<string | null> }>({});
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
@@ -477,7 +478,7 @@ function App() {
                   return next;
                 });
               }}
-              onExportImage={(exportFn) => registerExportFunction(index, exportFn)}
+              onExportImage={(exportFn: () => Promise<string | null>) => registerExportFunction(index, exportFn)}
             />
           ))}
         </div>
@@ -494,9 +495,10 @@ function App() {
         isOpen={isKofiModalOpen}
         onClose={() => setIsKofiModalOpen(false)}
       />
+      <Analytics />
     </div>
   );
 }
 
 export default App;
-  <Analytics/>
+// <Analytics/> removed from here
