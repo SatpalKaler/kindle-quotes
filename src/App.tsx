@@ -190,7 +190,31 @@ function App() {
       
       <DeviceWarning />
       <header className={`centered-header ${fileLoaded ? 'file-loaded' : 'initial'}`}>
-        <h1 className="text-center">Kindle Highlights to Wallpaper</h1>
+        <h1 className="text-center" style={{ margin: 0 }}>Kindle Highlights to Wallpaper</h1>
+        {highlights.length > 0 && (
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}>
+            <button
+              onClick={() => {
+                if (selectedHighlights.size === highlights.length) {
+                  setSelectedHighlights(new Set());
+                } else {
+                  setSelectedHighlights(new Set(highlights.map((_, idx) => idx)));
+                }
+              }}
+              className="select-all-btn"
+              style={{
+                padding: '6px 16px',
+                backgroundColor: '#444',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              {selectedHighlights.size === highlights.length ? 'Unselect All' : 'Select All'}
+            </button>
+          </div>
+        )}
       </header>
 
       <div style={{ 
