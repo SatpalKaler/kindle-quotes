@@ -20,7 +20,7 @@ interface Props {
   fontColor: string;
   onDimensionsChange?: (width: number, height: number) => void;
   isCustomDimension?: boolean;
-  onExportImage?: (exportFn: () => Promise<void>) => void;
+  onExportImage?: (exportFn: () => Promise<string | null>) => void;
 }
 
 export const HighlightCard: React.FC<Props> = ({
@@ -44,8 +44,8 @@ export const HighlightCard: React.FC<Props> = ({
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const exportAsImage = useCallback(async () => {
-    if (!cardRef.current) return;
+  const exportAsImage: () => Promise<string | null> = useCallback(async () => {
+    if (!cardRef.current) return null;
 
     try {
       const canvas = await html2canvas(cardRef.current, {
@@ -55,13 +55,23 @@ export const HighlightCard: React.FC<Props> = ({
         backgroundColor
       });
 
-      // Instead of downloading, return the data URL
       return canvas.toDataURL('image/png');
     } catch (error) {
       console.error('Error exporting image:', error);
       return null;
     }
   }, [backgroundColor, index]);
+
+  // Add this function for the button
+  const handleExportButtonClick = async () => {
+    const dataUrl = await exportAsImage();
+    if (dataUrl) {
+      const link = document.createElement('a');
+      link.download = `highlight-${index}.png`;
+      link.href = dataUrl;
+      link.click();
+    }
+  };
 
   useEffect(() => {
     if (onExportImage) {
@@ -77,7 +87,7 @@ export const HighlightCard: React.FC<Props> = ({
           checked={isSelected}
           onChange={onSelect}
         />
-        <button onClick={exportAsImage}>Export</button>
+        <button onClick={handleExportButtonClick}>Export</button>
         {isCustomDimension && (
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             <div>

@@ -22,7 +22,7 @@ function App() {
   const [fontColor, setFontColor] = useState('#FFFFFF');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTransparent, setIsTransparent] = useState(false);
-  const [exportFunctions, setExportFunctions] = useState<{ [key: number]: () => Promise<void> }>({});
+  const [exportFunctions, setExportFunctions] = useState<{ [key: number]: () => Promise<string | null> }>({});
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
   const [useRandomColors, setUseRandomColors] = useState(false);
@@ -124,11 +124,12 @@ function App() {
         if (exportFn) {
           // Each exportFn should return a data URL
           imagePromises.push(
-            exportFn().then((dataUrl: string) => {
-              // Add image to zip
-              // Remove "data:image/png;base64," prefix
-              const base64 = dataUrl.split(',')[1];
-              zip.file(`highlight-${index + 1}.png`, base64, { base64: true });
+            exportFn().then((dataUrl: string | null) => {
+              if (typeof dataUrl === 'string' && dataUrl.startsWith('data:image')) {
+                // Add image to zip
+                const base64 = dataUrl.split(',')[1];
+                zip.file(`highlight-${index + 1}.png`, base64, { base64: true });
+              }
               completed++;
               setExportProgress((completed / totalItems) * 100);
             })
@@ -153,7 +154,13 @@ function App() {
         const exportFn = exportFunctions[index];
         if (exportFn) {
           try {
-            await exportFn();
+            const dataUrl = await exportFn();
+            if (dataUrl && typeof dataUrl === 'string') {
+              const link = document.createElement('a');
+              link.download = `highlight-${index + 1}.png`;
+              link.href = dataUrl;
+              link.click();
+            }
             completed++;
             setExportProgress((completed / totalItems) * 100);
           } catch (error) {
@@ -167,14 +174,17 @@ function App() {
     setIsModalOpen(false);
   };
 
-  const registerExportFunction = useCallback((index: number, exportFn: () => Promise<void>) => {
-    setExportFunctions(prev => {
-      if (prev[index] !== exportFn) {
-        return { ...prev, [index]: exportFn };
-      }
-      return prev;
-    });
-  }, []);
+  const registerExportFunction = useCallback(
+    (index: number, exportFn: () => Promise<string | null>) => {
+      setExportFunctions(prev => {
+        if (prev[index] !== exportFn) {
+          return { ...prev, [index]: exportFn };
+        }
+        return prev;
+      });
+    },
+    []
+  );
 
   return (
     <div className="App">
