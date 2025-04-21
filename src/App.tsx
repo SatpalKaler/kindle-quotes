@@ -238,7 +238,7 @@ function App() {
       
       <DeviceWarning />
       <header className={`centered-header ${fileLoaded ? 'file-loaded' : 'initial'}`}>
-        <h1 className="text-center" style={{ margin: 0 }}>Kindle Highlights to Wallpaper</h1>
+        <h1 className="text-center" style={{ margin: 0 }}>Kindle Highlights to Screensaver</h1>
         {highlights.length > 0 && (
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}>
             <button
