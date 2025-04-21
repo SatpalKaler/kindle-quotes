@@ -6,10 +6,11 @@ import { Highlight } from './types/Highlight';
 import { ScreenDimension, SCREEN_DIMENSIONS } from './types/Dimensions';
 import './App.css';
 import ExportModal from './components/ExportModal';
-import { DeviceWarning } from './components/DeviceWarning';
 import KofiModal from './components/KofiModal';
 import { Analytics } from '@vercel/analytics/react';
 import JSZip from 'jszip';
+
+
 
 function App() {
   const [highlights, setHighlights] = useState<Highlight[]>([]);
@@ -31,6 +32,7 @@ function App() {
   const [hasFileUploaded, setHasFileUploaded] = useState(false);
   const [isKofiModalOpen, setIsKofiModalOpen] = useState(false);
   const [fileLoaded, setFileLoaded] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);  // Add this line
 
   const calculateContrastRatio = (color1: string, color2: string) => {
     // Convert hex to RGB
@@ -189,6 +191,19 @@ function App() {
 
   return (
     <div className="App">
+      <button
+        className="hamburger-menu"
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        aria-label="Toggle menu"
+      >
+        ☰
+      </button>
+
+      {/* Add mobile notice */}
+      <div className="mobile-notice">
+        For the best experience, use on desktop
+      </div>
+
       {!hasFileUploaded && (
         <div className="instructions-overlay">
           <div className="instructions-modal">
@@ -237,7 +252,8 @@ function App() {
         </div>
       )}
       
-      <DeviceWarning />
+      {/* Remove these lines as the state is already declared at the top */}
+      
       <header className={`centered-header ${fileLoaded ? 'file-loaded' : 'initial'}`}>
         <h1 className="text-center" style={{ margin: 0 }}>Kindle Highlights to Screensaver</h1>
         {highlights.length > 0 && (
@@ -284,7 +300,14 @@ function App() {
       </div>
       
       <div className="main-content">
-        <div className="controls">
+        <div className={`controls ${isMenuOpen ? 'mobile-open' : ''}`}>
+          <button
+            className="close-menu"
+            onClick={() => setIsMenuOpen(false)}
+            aria-label="Close menu"
+          >
+            ×
+          </button>
           <div className="control-layer">
             <div className="control-group">
               <div className={!hasFileUploaded ? 'disabled-controls' : ''}>
@@ -501,4 +524,3 @@ function App() {
 }
 
 export default App;
-// <Analytics/> removed from here

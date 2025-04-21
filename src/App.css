@@ -54,6 +54,7 @@
   min-height: 100vh;
 }
 
+/* Controls - single definition */
 .controls {
   width: 350px;
   flex-shrink: 0;
@@ -65,6 +66,7 @@
   padding: 20px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
   z-index: 800;
+  overflow-y: auto;
 }
 
 .highlights-container {
@@ -85,37 +87,7 @@
   background: rgba(255, 255, 255, 0);
   border-radius: 8px;
   min-height: 300px;
-}
-
-.quote {
-  font-size: 24px;
-  line-height: 1.4;
-  margin: 0;
-  text-align: center;
-  width: 100%;
-}
-
-.metadata {
-  font-size: 16px;
-  text-align: right;
-  width: 100%;
-  margin-top: auto;
-}
-
-.metadata p {
-  margin: 5px 0;
-}
-
-.control-group {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
-}
-
-.highlight-card {
   border: 2px solid transparent;
-  padding: 10px;
   margin-bottom: 20px;
 }
 
@@ -191,7 +163,7 @@
 
 .icon {
   cursor: pointer;
-  font-size: 24px; /* Adjust size as needed */
+  font-size: 24px;
   padding: 8px 12px;
   border: 1px solid transparent;
   border-radius: 4px;
@@ -199,12 +171,12 @@
 }
 
 .icon:hover {
-  background-color: rgba(255, 255, 255, 0.2); /* Highlight on hover */
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .icon.active {
-  background-color: rgba(255, 255, 255, 0.5); /* Active state */
-  border: 1px solid #fff; /* Optional: highlight active icon */
+  background-color: rgba(255, 255, 255, 0.5);
+  border: 1px solid #fff;
 }
 
 .modal-overlay {
@@ -297,7 +269,6 @@
   background: rgba(0, 128, 128, 0.3);
 }
 
-/* Add some breathing room between font controls */
 .control-group label[for="fontSize"],
 .control-group label[for="metadataFontSize"] {
   margin-top: 15px;
@@ -327,6 +298,32 @@
   gap: 20px;
 }
 
+/* Hamburger menu - single definition */
+.hamburger-menu {
+  display: none;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: white;
+  cursor: pointer;
+}
+
+.close-menu {
+  display: none;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: white;
+  cursor: pointer;
+}
+
 .highlights-grid {
   flex-grow: 1;
   display: grid;
@@ -336,7 +333,60 @@
   margin-left: 400px;
 }
 
-/* Adjust the export popup to not interfere with the grid */
+/* Single media query for mobile */
+@media (max-width: 768px) {
+  .hamburger-menu {
+    display: block;
+  }
+
+  .close-menu {
+    display: block;
+  }
+
+  .controls {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    position: fixed;
+    top: 00px;
+    left: 0;
+    width: 85%;
+    max-width: 320px;
+    padding-top: 90px;
+    height: 200vh;
+    background-color: rgb(0, 77, 77);
+    z-index: 999;
+    padding: 60px;
+    overflow-y: auto;
+  }
+
+  .controls.mobile-open {
+    transform: translateX(0);
+  }
+
+  .highlights-grid {
+    grid-template-columns: 1fr;
+    margin-left: 0;
+    padding: 10px;
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .centered-header {
+    width: 100%;
+    margin-left: 0;
+    padding: 1rem;
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+
+  #root {
+    padding: 1rem;
+  }
+}
+
 .export-popup {
   position: fixed;
   bottom: 20px;
@@ -379,14 +429,13 @@
   background: #00cc5f;
 }
 
-/* Add a specific class for export */
 .export-highlight-card {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
   padding: 2rem !important;
-  background: rgba(0, 0, 0, 1) !important; /* Force black background */
+  background: rgba(0, 0, 0, 1) !important;
   min-height: 300px !important;
   width: 100% !important;
 }
@@ -429,8 +478,18 @@
 }
 
 .file-upload-container {
+  background: rgba(0, 128, 128, 0.2);
+  padding: 15px;
+  border-radius: 8px;
+  margin: 15px 0;
+  border: 2px dashed teal;
   transition: all 0.3s ease;
   z-index: 1000;
+}
+
+.file-upload-container:hover {
+  background: rgba(0, 128, 128, 0.3);
+  border-color: #00b3b3;
 }
 
 .file-upload-container.prominent {
@@ -449,6 +508,12 @@
   z-index: 1000;
 }
 
+.file-upload-container input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  color: white;
+  cursor: pointer;
+}
 
 .instructions-overlay {
   position: fixed;
@@ -464,6 +529,13 @@
   transform: translate(-50%, -50%);
   width: 100%;
   height: 100%;
+  zoom: 1.1;
+}
+
+@media (max-width: 768px) {
+  .instructions-overlay {
+    zoom: 0.78;
+  }
 }
 
 .instructions-modal {
@@ -507,27 +579,6 @@
   margin-left: -10%;
 }
 
-.file-upload-container {
-  background: rgba(0, 128, 128, 0.2);
-  padding: 15px;
-  border-radius: 8px;
-  margin: 15px 0;
-  border: 2px dashed teal;
-  transition: all 0.3s ease;
-}
-
-.file-upload-container:hover {
-  background: rgba(0, 128, 128, 0.3);
-  border-color: #00b3b3;
-}
-
-.file-upload-container input[type="file"] {
-  width: 100%;
-  padding: 10px;
-  color: white;
-  cursor: pointer;
-}
-
 .instruction-image {
   width: 100%;
   border-radius: 8px;
@@ -552,11 +603,10 @@
 }
 
 .control-group select option {
-  background-color: rgb(0, 77, 77); /* Match the sidebar color */
+  background-color: rgb(0, 77, 77);
   color: white;
 }
 
-/* Styling for range inputs */
 .control-group input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
@@ -568,7 +618,6 @@
   border: 1px solid teal;
 }
 
-/* Thumb styling */
 .control-group input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -589,12 +638,49 @@
   border: 2px solid teal;
 }
 
-/* Value display styling */
 .control-group span {
   color: white;
   margin-left: 10px;
   font-size: 14px;
 }
+
 body {
   zoom: 85%;
+}
+
+/* Highlights grid: 1 card per row on mobile */
+@media (max-width: 768px) {
+  .highlights-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+.mobile-notice {
+  display: none;
+  text-align: center;
+  padding: 8px;
+  background: rgba(0, 77, 77, 0.9);
+  color: #fff;
+  font-size: 14px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+}
+
+@media (max-width: 768px) {
+  .mobile-notice {
+    display: block;
+  }
+
+  .controls {
+    padding-top: 40px; /* Add space for the notice */
+  }
+
+  .hamburger-menu {
+    top: 40px; /* Move hamburger below the notice */
+  }
 }

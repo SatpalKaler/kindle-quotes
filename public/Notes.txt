@@ -1,5 +1,2 @@
-
-
-Add clicking anywhere in a hitbox, rather than having to hit select box accurately
-
-Add googlesense ads
+* needs KOReader integration - json & text
+change the image to incorporate koreader too
