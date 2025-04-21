@@ -55,12 +55,12 @@
 }
 
 .controls {
-  width: 400px;
+  width: 350px;
   flex-shrink: 0;
   position: fixed;
   left: 0;
   top: 0;
-  height: 100vh;
+  height: 200vh;
   background-color: rgb(0, 77, 77);
   padding: 20px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
@@ -594,4 +594,7 @@
   color: white;
   margin-left: 10px;
   font-size: 14px;
+}
+body {
+  zoom: 85%;
 }
