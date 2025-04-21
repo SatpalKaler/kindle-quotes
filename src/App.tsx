@@ -9,6 +9,7 @@ import ExportModal from './components/ExportModal';
 import { DeviceWarning } from './components/DeviceWarning';
 import KofiModal from './components/KofiModal';
 import { Analytics } from '@vercel/analytics/react';
+import JSZip from 'jszip';
 
 function App() {
   const [highlights, setHighlights] = useState<Highlight[]>([]);
@@ -106,25 +107,62 @@ function App() {
     if (selected) setSelectedDimension(selected);
   };
 
+  // Helper to export all selected as a zip if more than 3
   const exportSelected = async () => {
     setIsExporting(true);
     setExportProgress(0);
     const totalItems = selectedHighlights.size;
     let completed = 0;
 
-    for (const index of selectedHighlights) {
-      const exportFn = exportFunctions[index];
-      if (exportFn) {
-        try {
-          await exportFn();
-          completed++;
-          setExportProgress((completed / totalItems) * 100);
-        } catch (error) {
-          console.error(`Error exporting highlight ${index}:`, error);
+    if (totalItems > 3) {
+      // Zip logic
+      const zip = new JSZip();
+      const imagePromises: Promise<void>[] = [];
+
+      for (const index of selectedHighlights) {
+        const exportFn = exportFunctions[index];
+        if (exportFn) {
+          // Each exportFn should return a data URL
+          imagePromises.push(
+            exportFn().then((dataUrl: string) => {
+              // Add image to zip
+              // Remove "data:image/png;base64," prefix
+              const base64 = dataUrl.split(',')[1];
+              zip.file(`highlight-${index + 1}.png`, base64, { base64: true });
+              completed++;
+              setExportProgress((completed / totalItems) * 100);
+            })
+          );
+        }
+      }
+
+      await Promise.all(imagePromises);
+
+      // Generate and download zip
+      const blob = await zip.generateAsync({ type: 'blob' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'highlights.zip';
+      a.click();
+      URL.revokeObjectURL(url);
+
+    } else {
+      // Existing logic for 3 or fewer
+      for (const index of selectedHighlights) {
+        const exportFn = exportFunctions[index];
+        if (exportFn) {
+          try {
+            await exportFn();
+            completed++;
+            setExportProgress((completed / totalItems) * 100);
+          } catch (error) {
+            console.error(`Error exporting highlight ${index}:`, error);
+          }
         }
       }
     }
-    
+
     setIsExporting(false);
     setIsModalOpen(false);
   };

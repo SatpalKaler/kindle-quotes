@@ -55,12 +55,11 @@ export const HighlightCard: React.FC<Props> = ({
         backgroundColor
       });
 
-      const link = document.createElement('a');
-      link.download = `highlight-${index}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
+      // Instead of downloading, return the data URL
+      return canvas.toDataURL('image/png');
     } catch (error) {
       console.error('Error exporting image:', error);
+      return null;
     }
   }, [backgroundColor, index]);
 
@@ -154,4 +153,4 @@ export const HighlightCard: React.FC<Props> = ({
       </div>
     </div>
   );
-}; 
+};
