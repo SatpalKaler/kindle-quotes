@@ -87,7 +87,7 @@ export const HighlightCard: React.FC<Props> = ({
           checked={isSelected}
           onChange={onSelect}
         />
-        <button onClick={handleExportButtonClick}>Export</button>
+        
         {isCustomDimension && (
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             <div>
