@@ -6,11 +6,10 @@ import { Highlight } from './types/Highlight';
 import { ScreenDimension, SCREEN_DIMENSIONS } from './types/Dimensions';
 import './App.css';
 import ExportModal from './components/ExportModal';
+import { DeviceWarning } from './components/DeviceWarning';
 import KofiModal from './components/KofiModal';
 import { Analytics } from '@vercel/analytics/react';
-import JSZip from 'jszip';
-
-
+import { exportImagesAsZip } from './utils/zipExport';
 
 function App() {
   const [highlights, setHighlights] = useState<Highlight[]>([]);
@@ -23,7 +22,6 @@ function App() {
   const [fontColor, setFontColor] = useState('#FFFFFF');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTransparent, setIsTransparent] = useState(false);
-  // Change the type here to match the actual function signature
   const [exportFunctions, setExportFunctions] = useState<{ [key: number]: () => Promise<string | null> }>({});
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
@@ -32,7 +30,6 @@ function App() {
   const [hasFileUploaded, setHasFileUploaded] = useState(false);
   const [isKofiModalOpen, setIsKofiModalOpen] = useState(false);
   const [fileLoaded, setFileLoaded] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);  // Add this line
 
   const calculateContrastRatio = (color1: string, color2: string) => {
     // Convert hex to RGB
@@ -110,100 +107,62 @@ function App() {
     if (selected) setSelectedDimension(selected);
   };
 
-  // Helper to export all selected as a zip if more than 3
   const exportSelected = async () => {
     setIsExporting(true);
     setExportProgress(0);
     const totalItems = selectedHighlights.size;
     let completed = 0;
 
-    if (totalItems > 3) {
-      // Zip logic
-      const zip = new JSZip();
-      const imagePromises: Promise<void>[] = [];
-
-      for (const index of selectedHighlights) {
+    // If 3 or more, export as zip
+    if (selectedHighlights.size >= 3) {
+      // Collect data URLs for each selected highlight
+      const imagePromises = Array.from(selectedHighlights).map(async (index) => {
         const exportFn = exportFunctions[index];
-        if (exportFn) {
-          // Each exportFn should return a data URL
-          imagePromises.push(
-            exportFn().then((dataUrl: string | null) => {
-              if (typeof dataUrl === 'string' && dataUrl.startsWith('data:image')) {
-                // Add image to zip
-                const base64 = dataUrl.split(',')[1];
-                zip.file(`highlight-${index + 1}.png`, base64, { base64: true });
-              }
-              completed++;
-              setExportProgress((completed / totalItems) * 100);
-            })
-          );
-        }
-      }
+        if (!exportFn) return null;
+        const dataUrl = await exportFn();
+        if (!dataUrl) return null;
+        return { filename: `highlight-${index}.png`, dataUrl };
+      });
+      const images = (await Promise.all(imagePromises)).filter(Boolean) as { filename: string, dataUrl: string }[];
+      await exportImagesAsZip(images);
+      setIsExporting(false);
+      setIsModalOpen(false);
+      return;
+    }
 
-      await Promise.all(imagePromises);
-
-      // Generate and download zip
-      const blob = await zip.generateAsync({ type: 'blob' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'highlights.zip';
-      a.click();
-      URL.revokeObjectURL(url);
-
-    } else {
-      // Existing logic for 3 or fewer
-      for (const index of selectedHighlights) {
-        const exportFn = exportFunctions[index];
-        if (exportFn) {
-          try {
-            const dataUrl = await exportFn();
-            if (dataUrl && typeof dataUrl === 'string') {
-              const link = document.createElement('a');
-              link.download = `highlight-${index + 1}.png`;
-              link.href = dataUrl;
-              link.click();
-            }
-            completed++;
-            setExportProgress((completed / totalItems) * 100);
-          } catch (error) {
-            console.error(`Error exporting highlight ${index}:`, error);
+    // Otherwise, export individually
+    for (const index of selectedHighlights) {
+      const exportFn = exportFunctions[index];
+      if (exportFn) {
+        try {
+          const dataUrl = await exportFn();
+          if (dataUrl) {
+            const link = document.createElement('a');
+            link.download = `highlight-${index}.png`;
+            link.href = dataUrl;
+            link.click();
           }
+          completed++;
+          setExportProgress((completed / totalItems) * 100);
+        } catch (error) {
+          console.error(`Error exporting highlight ${index}:`, error);
         }
       }
     }
-
     setIsExporting(false);
     setIsModalOpen(false);
   };
 
-  const registerExportFunction = useCallback(
-    (index: number, exportFn: () => Promise<string | null>) => {
-      setExportFunctions(prev => {
-        if (prev[index] !== exportFn) {
-          return { ...prev, [index]: exportFn };
-        }
-        return prev;
-      });
-    },
-    []
-  );
+  const registerExportFunction = useCallback((index: number, exportFn: () => Promise<string | null>) => {
+    setExportFunctions(prev => {
+      const next = { ...prev };
+      next[index] = exportFn;
+      return next;
+    });
+  }, []);
 
   return (
     <div className="App">
-      <button
-        className="hamburger-menu"
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
-        aria-label="Toggle menu"
-      >
-        ☰
-      </button>
-
-      {/* Add mobile notice */}
-      <div className="mobile-notice">
-        For the best experience, use on desktop
-      </div>
-
       {!hasFileUploaded && (
         <div className="instructions-overlay">
           <div className="instructions-modal">
@@ -252,34 +211,9 @@ function App() {
         </div>
       )}
       
-      {/* Remove these lines as the state is already declared at the top */}
-      
+      <DeviceWarning />
       <header className={`centered-header ${fileLoaded ? 'file-loaded' : 'initial'}`}>
-        <h1 className="text-center" style={{ margin: 0 }}>Kindle Highlights to Screensaver</h1>
-        {highlights.length > 0 && (
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}>
-            <button
-              onClick={() => {
-                if (selectedHighlights.size === highlights.length) {
-                  setSelectedHighlights(new Set());
-                } else {
-                  setSelectedHighlights(new Set(highlights.map((_, idx) => idx)));
-                }
-              }}
-              className="select-all-btn"
-              style={{
-                padding: '6px 16px',
-                backgroundColor: '#444',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              {selectedHighlights.size === highlights.length ? 'Unselect All' : 'Select All'}
-            </button>
-          </div>
-        )}
+        <h1 className="text-center">Kindle Highlights to Wallpaper</h1>
       </header>
 
       <div style={{ 
@@ -299,15 +233,45 @@ function App() {
         )}
       </div>
       
-      <div className="main-content">
-        <div className={`controls ${isMenuOpen ? 'mobile-open' : ''}`}>
+      <div className="main-content" style={{ position: 'relative' }}>
+        <div style={{
+          position: 'absolute',
+          top: '-50px',
+          right: '-150px',
+          zIndex: 100,
+          display: 'flex',
+          alignItems: 'center',
+        }}>
           <button
-            className="close-menu"
-            onClick={() => setIsMenuOpen(false)}
-            aria-label="Close menu"
+            onClick={() => {
+              if (selectedHighlights.size === highlights.length) {
+                setSelectedHighlights(new Set());
+              } else {
+                setSelectedHighlights(new Set(highlights.map((_, i) => i)));
+              }
+            }}
+            style={{
+              padding: '7px 16px',
+              borderRadius: '6px',
+              background: '#113c3c', // dark teal
+              color: '#fff',
+              fontWeight: 600,
+              fontSize: '1rem',
+              cursor: 'pointer',
+              border: '1.5px solid #00b3b3',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+              transition: 'background 0.2s, border 0.2s',
+              marginRight: 0,
+              marginTop: 0,
+            }}
+            disabled={!hasFileUploaded || highlights.length === 0}
+            onMouseOver={e => (e.currentTarget.style.background = '#176d6d')}
+            onMouseOut={e => (e.currentTarget.style.background = '#113c3c')}
           >
-            ×
+            {selectedHighlights.size === highlights.length ? 'Unselect All' : 'Select All'}
           </button>
+        </div>
+        <div className="controls">
           <div className="control-layer">
             <div className="control-group">
               <div className={!hasFileUploaded ? 'disabled-controls' : ''}>
@@ -466,9 +430,10 @@ function App() {
           </div>
         )}
 
+
         <div className="highlights-grid">
           {highlights.map((highlight, index) => (
-            <HighlightCard 
+            <HighlightCard
               key={index}
               index={index}
               highlight={highlight}
@@ -501,7 +466,7 @@ function App() {
                   return next;
                 });
               }}
-              onExportImage={(exportFn: () => Promise<string | null>) => registerExportFunction(index, exportFn)}
+              onExportImage={(exportFn) => registerExportFunction(index, exportFn)}
             />
           ))}
         </div>
@@ -518,9 +483,9 @@ function App() {
         isOpen={isKofiModalOpen}
         onClose={() => setIsKofiModalOpen(false)}
       />
-      <Analytics />
     </div>
   );
 }
 
 export default App;
+  <Analytics/>
