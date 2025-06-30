@@ -1,0 +1,3 @@
+1. fix alignment issue when exporting
+2. read koreader.md
+3. edit text & metadata in preview

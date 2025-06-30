@@ -71,14 +71,18 @@ export const HighlightCard: React.FC<Props> = ({
   }, [exportAsImage, onExportImage]);
 
   return (
-    <div className={`highlight-card ${isSelected ? 'selected' : ''}`}>
+    <div
+      className={`highlight-card ${isSelected ? 'selected' : ''}`}
+      onClick={onSelect}
+      style={{ cursor: 'pointer' }}
+    >
       <div className="card-header">
         <input
           type="checkbox"
           checked={isSelected}
           onChange={onSelect}
+          onClick={e => e.stopPropagation()} // Prevents card click when clicking checkbox
         />
-        <button onClick={exportAsImage}>Export</button>
         {isCustomDimension && (
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             <div>

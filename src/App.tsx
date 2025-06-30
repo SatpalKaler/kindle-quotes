@@ -9,6 +9,7 @@ import ExportModal from './components/ExportModal';
 import { DeviceWarning } from './components/DeviceWarning';
 import KofiModal from './components/KofiModal';
 import { Analytics } from '@vercel/analytics/react';
+import { exportImagesAsZip } from './utils/zipExport';
 
 function App() {
   const [highlights, setHighlights] = useState<Highlight[]>([]);
@@ -112,6 +113,42 @@ function App() {
     const totalItems = selectedHighlights.size;
     let completed = 0;
 
+    // If 3 or more, export as zip
+    if (selectedHighlights.size >= 3) {
+      // Collect data URLs for each selected highlight
+      const imagePromises = Array.from(selectedHighlights).map(async (index) => {
+        const exportFn = exportFunctions[index];
+        if (!exportFn) return null;
+        // Patch: wrap exportFn to return the dataUrl
+        // We'll monkey-patch exportFn to return a dataUrl
+        // We assume exportFn saves the canvas to a temp variable on window
+        let dataUrl: string | null = null;
+        const origCreateElement = document.createElement;
+        document.createElement = function(tag: string) {
+          if (tag === 'a') {
+            // intercept link creation
+            const a = origCreateElement.call(document, tag);
+            Object.defineProperty(a, 'href', {
+              set(val) { dataUrl = val; },
+              get() { return dataUrl; },
+              configurable: true
+            });
+            return a;
+          }
+          return origCreateElement.call(document, tag);
+        };
+        await exportFn();
+        document.createElement = origCreateElement;
+        return { filename: `highlight-${index}.png`, dataUrl: dataUrl! };
+      });
+      const images = (await Promise.all(imagePromises)).filter(Boolean) as { filename: string, dataUrl: string }[];
+      await exportImagesAsZip(images);
+      setIsExporting(false);
+      setIsModalOpen(false);
+      return;
+    }
+
+    // Otherwise, export individually
     for (const index of selectedHighlights) {
       const exportFn = exportFunctions[index];
       if (exportFn) {
@@ -124,10 +161,10 @@ function App() {
         }
       }
     }
-    
     setIsExporting(false);
     setIsModalOpen(false);
   };
+
 
   const registerExportFunction = useCallback((index: number, exportFn: () => Promise<void>) => {
     setExportFunctions(prev => {
@@ -210,7 +247,44 @@ function App() {
         )}
       </div>
       
-      <div className="main-content">
+      <div className="main-content" style={{ position: 'relative' }}>
+        <div style={{
+          position: 'absolute',
+          top: '-50px',
+          right: '-150px',
+          zIndex: 100,
+          display: 'flex',
+          alignItems: 'center',
+        }}>
+          <button
+            onClick={() => {
+              if (selectedHighlights.size === highlights.length) {
+                setSelectedHighlights(new Set());
+              } else {
+                setSelectedHighlights(new Set(highlights.map((_, i) => i)));
+              }
+            }}
+            style={{
+              padding: '7px 16px',
+              borderRadius: '6px',
+              background: '#113c3c', // dark teal
+              color: '#fff',
+              fontWeight: 600,
+              fontSize: '1rem',
+              cursor: 'pointer',
+              border: '1.5px solid #00b3b3',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+              transition: 'background 0.2s, border 0.2s',
+              marginRight: 0,
+              marginTop: 0,
+            }}
+            disabled={!hasFileUploaded || highlights.length === 0}
+            onMouseOver={e => (e.currentTarget.style.background = '#176d6d')}
+            onMouseOut={e => (e.currentTarget.style.background = '#113c3c')}
+          >
+            {selectedHighlights.size === highlights.length ? 'Unselect All' : 'Select All'}
+          </button>
+        </div>
         <div className="controls">
           <div className="control-layer">
             <div className="control-group">
@@ -370,9 +444,10 @@ function App() {
           </div>
         )}
 
+
         <div className="highlights-grid">
           {highlights.map((highlight, index) => (
-            <HighlightCard 
+            <HighlightCard
               key={index}
               index={index}
               highlight={highlight}
