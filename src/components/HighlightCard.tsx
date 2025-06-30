@@ -48,19 +48,65 @@ export const HighlightCard: React.FC<Props> = ({
   const exportAsImage: () => Promise<string | null> = useCallback(async () => {
     if (!cardRef.current) return null;
 
+    let clone: HTMLElement | null = null;
     try {
-      const canvas = await html2canvas(cardRef.current, {
-        scale: 5,
+      // Wait for fonts to load first
+      await document.fonts.ready;
+      
+      // Create a clone of the element to avoid modifying the original
+      clone = cardRef.current.cloneNode(true) as HTMLElement;
+      document.body.appendChild(clone);
+
+      // Position the clone off-screen but ensure it's rendered
+      Object.assign(clone.style, {
+        position: 'fixed',
+        top: '0',
+        left: '-9999px',
+        width: cardRef.current.offsetWidth + 'px',
+        height: cardRef.current.offsetHeight + 'px',
+        fontFamily: fontFamily, // Ensure font family is applied
+        visibility: 'visible', // Make sure it's visible for rendering
+      });
+
+      // Ensure all text elements in the clone have the correct font
+      const textElements = clone.querySelectorAll('p, div, span');
+      textElements.forEach(el => {
+        const element = el as HTMLElement;
+        element.style.fontFamily = fontFamily;
+      });
+
+      // Wait longer for the clone to be rendered and fonts to load
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      const canvas = await html2canvas(clone, {
+        scale: 2, // Reduce scale for better text rendering
         useCORS: true,
-        logging: false,
-        backgroundColor
+        logging: false, // Disable logging for cleaner output
+        backgroundColor,
+        allowTaint: true,
+        width: cardRef.current.offsetWidth,
+        height: cardRef.current.offsetHeight,
+        onclone: (_, element) => {
+          // Ensure fonts are applied in the cloned document
+          const allElements = element.querySelectorAll('*');
+          allElements.forEach(el => {
+            if (el instanceof HTMLElement) {
+              el.style.fontFamily = fontFamily;
+            }
+          });
+        }
       });
 
       const dataUrl = canvas.toDataURL('image/png');
-      return dataUrl; // Return the dataUrl as expected
+      return dataUrl;
     } catch (error) {
       console.error('Error exporting image:', error);
       return null;
+    } finally {
+      // Clean up the cloned element
+      if (clone && clone.parentNode) {
+        clone.parentNode.removeChild(clone);
+      }
     }
   }, [backgroundColor, index]);
 
@@ -121,6 +167,7 @@ export const HighlightCard: React.FC<Props> = ({
       
       <div 
         ref={cardRef}
+        className="highlight-content"
         style={{
           backgroundColor: backgroundColor,
           width: `${width}px`,
@@ -145,14 +192,15 @@ export const HighlightCard: React.FC<Props> = ({
         }}>
           <p style={{ 
             fontSize: `${fontSize}px`,
-            lineHeight: '1.4',
+            lineHeight: '1.6',
             marginBottom: '20px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
             color: fontColor,
             fontWeight: 'bold',
             fontStyle: 'italic',
+            textAlign: 'center',
+            width: '100%',
+            margin: '0 auto 20px auto',
+            padding: '0',
           }}>
             {highlight.text}
           </p>
