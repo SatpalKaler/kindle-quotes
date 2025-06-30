@@ -22,7 +22,7 @@ function App() {
   const [fontColor, setFontColor] = useState('#FFFFFF');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTransparent, setIsTransparent] = useState(false);
-  const [exportFunctions, setExportFunctions] = useState<{ [key: number]: () => Promise<void> }>({});
+  const [exportFunctions, setExportFunctions] = useState<{ [key: number]: () => Promise<string | null> }>({});
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
   const [useRandomColors, setUseRandomColors] = useState(false);
@@ -119,27 +119,9 @@ function App() {
       const imagePromises = Array.from(selectedHighlights).map(async (index) => {
         const exportFn = exportFunctions[index];
         if (!exportFn) return null;
-        // Patch: wrap exportFn to return the dataUrl
-        // We'll monkey-patch exportFn to return a dataUrl
-        // We assume exportFn saves the canvas to a temp variable on window
-        let dataUrl: string | null = null;
-        const origCreateElement = document.createElement;
-        document.createElement = function(tag: string) {
-          if (tag === 'a') {
-            // intercept link creation
-            const a = origCreateElement.call(document, tag);
-            Object.defineProperty(a, 'href', {
-              set(val) { dataUrl = val; },
-              get() { return dataUrl; },
-              configurable: true
-            });
-            return a;
-          }
-          return origCreateElement.call(document, tag);
-        };
-        await exportFn();
-        document.createElement = origCreateElement;
-        return { filename: `highlight-${index}.png`, dataUrl: dataUrl! };
+        const dataUrl = await exportFn();
+        if (!dataUrl) return null;
+        return { filename: `highlight-${index}.png`, dataUrl };
       });
       const images = (await Promise.all(imagePromises)).filter(Boolean) as { filename: string, dataUrl: string }[];
       await exportImagesAsZip(images);
@@ -153,7 +135,13 @@ function App() {
       const exportFn = exportFunctions[index];
       if (exportFn) {
         try {
-          await exportFn();
+          const dataUrl = await exportFn();
+          if (dataUrl) {
+            const link = document.createElement('a');
+            link.download = `highlight-${index}.png`;
+            link.href = dataUrl;
+            link.click();
+          }
           completed++;
           setExportProgress((completed / totalItems) * 100);
         } catch (error) {
@@ -165,13 +153,11 @@ function App() {
     setIsModalOpen(false);
   };
 
-
-  const registerExportFunction = useCallback((index: number, exportFn: () => Promise<void>) => {
+  const registerExportFunction = useCallback((index: number, exportFn: () => Promise<string | null>) => {
     setExportFunctions(prev => {
-      if (prev[index] !== exportFn) {
-        return { ...prev, [index]: exportFn };
-      }
-      return prev;
+      const next = { ...prev };
+      next[index] = exportFn;
+      return next;
     });
   }, []);
 

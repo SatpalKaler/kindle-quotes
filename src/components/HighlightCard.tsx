@@ -20,7 +20,7 @@ interface Props {
   fontColor: string;
   onDimensionsChange?: (width: number, height: number) => void;
   isCustomDimension?: boolean;
-  onExportImage?: (exportFn: () => Promise<void>) => void;
+  onExportImage?: (exportFn: () => Promise<string | null>) => void;
 }
 
 export const HighlightCard: React.FC<Props> = ({
@@ -44,9 +44,8 @@ export const HighlightCard: React.FC<Props> = ({
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const exportAsImage = useCallback(async () => {
-    if (!cardRef.current) return;
-
+  const exportAsImage = useCallback(async (): Promise<string | null> => {
+    if (!cardRef.current) return null;
     try {
       const canvas = await html2canvas(cardRef.current, {
         scale: 5,
@@ -54,18 +53,16 @@ export const HighlightCard: React.FC<Props> = ({
         logging: false,
         backgroundColor
       });
-
-      const link = document.createElement('a');
-      link.download = `highlight-${index}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
+      return canvas.toDataURL('image/png');
     } catch (error) {
       console.error('Error exporting image:', error);
+      return null;
     }
   }, [backgroundColor, index]);
 
   useEffect(() => {
     if (onExportImage) {
+      // The prop now expects a function returning Promise<string | null>
       onExportImage(exportAsImage);
     }
   }, [exportAsImage, onExportImage]);
